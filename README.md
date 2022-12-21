@@ -21,6 +21,7 @@ Bare-metal implementation of WS2812B LED strip for STM32F446RE
 **Additional notes**
 - *1000ns = 1us*
 - *WS2812 has 6 legs, WS2812b has 4 legs.*
+- *Sending order of colors is GRB.*
 - *Total tolerance is +/- 600ns but the description seems vague because that's almost half of total period.*
 - *Tolerance of +/- 150ns gives us a small fliexibility to configure our timer.*
 - *Reset signal ends sequence. After reset LED is counting again from first LED.*
