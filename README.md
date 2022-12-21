@@ -49,6 +49,7 @@ Bare-metal implementation of WS2812B LED strip for STM32F446RE
 | 10MHz     | 100ns     | ~12.5             | 3.5      | 7        | 4        | 8          | 9                         | 8     |
 
 ## DMA configuration:
+*I still didn't figured this out.*
 - It should set the timer CCR register when counter reloads the value and not when Capture/compare overflow event occurs. It will control the pulse length of PWM wave which eventually corresponds to logical 0 and 1. Using DMA is important as no other calculations should be done on transmission.
 - After sending data of each LED, DMA should stop transmission and the reset signal should be sent.
 
