@@ -7,7 +7,7 @@ typedef struct {
 } Led;
 
 void timer_init();
-void dma_init();
+void dma_init(int vals, int peripheal, int size);
 
 Led setColor(short r, short g, short b);
 
