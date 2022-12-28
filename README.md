@@ -44,6 +44,11 @@ I've tested the code with 8 LED strip. STM32 operates in 3.3V logic so even smal
 
 *I spent three days trying to fix glitches to realize that plugging STM32 to my phone charger solved all issues. It was cumbersome because I don't have an oscilloscope and I was 99,99% sure it was timing issue.*
 
+### Compile and upload:
+1. In makefile add directory to CMSIS drivers.
+2. Add directory to ST-Link
+3. Type `make compile upload`
+
 ## Timer configuration:
 **We are using PWM mode to pass the 0 and 1 as its pulse period.**
 - Setting timer to period of 1ns is not possible as it requires 1GHz clock. Below are some possible variants. It depends how the clocks are set, we can use prescaler to get a desired frequency. 
