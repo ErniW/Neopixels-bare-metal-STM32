@@ -1,15 +1,15 @@
 #pragma once
 
 typedef struct {
-    short g;
-    short r;
-    short b;
+    int r;
+    int g;
+    int b;
 } Led;
 
 void timer_init();
 void dma_init();
 
-Led setColor(short r, short g, short b);
+Led setColor(int r, int g, int b);
 
-void send(Led* strip, int length);
+void send(Led *strip, int length);
 void stop();

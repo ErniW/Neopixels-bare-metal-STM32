@@ -73,7 +73,7 @@ void dma_init(int vals, int peripheral, int size){
       TIM2->SR &=~ TIM_SR_UIF;
 }
 
-Led setColor(short r, short g, short b){
+Led setColor(int r, int g, int b){
     Led color = {g, r, b};
     return color;
 };

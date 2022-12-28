@@ -3,6 +3,8 @@
         "stm32f4xx.h": "c",
         "stm32f446xx.h": "c",
         "pll.h": "c",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "neopixels.h": "c",
+        "systick.h": "c"
     }
 }
