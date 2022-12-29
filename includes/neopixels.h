@@ -1,12 +1,17 @@
 #pragma once
 #include "../STM32F446RE/stm32f4xx.h"
-#include "../STM32F446RE/stm32f446xx.h"
 
 typedef struct {
     uint8_t r;
     uint8_t g;
     uint8_t b;
 } Led;
+
+typedef struct {
+    Led* data;
+    uint16_t size;
+    uint8_t state;
+} LedStrip;
 
 enum{
     STATE_IDLE,

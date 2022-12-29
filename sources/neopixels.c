@@ -1,13 +1,12 @@
 #include "neopixels.h"
-#include "serial.h"
+// #include "serial.h"
 #include "sysTick.h"
 #include "../STM32F446RE/stm32f446xx.h"
-#include <stdio.h>
+// #include <stdio.h>
 
 #define PA5_AF_MODE (1 << 11)
 #define PA5_AF1     (1 << 20)
 #define CH1_PWM_MODE_1 (6 << 4)
-
 
 #define TIMER_PRESCALER 2
 #define WS2812_FREQUENCY_800KHZ_TICKS 56
@@ -29,7 +28,7 @@ void timer_init(){
     TIM2->PSC = TIMER_PRESCALER - 1;
     TIM2->ARR = WS2812_FREQUENCY_800KHZ_TICKS;
     TIM2->CCMR1 = CH1_PWM_MODE_1;
-    TIM2->CCR1 = 0;
+    // TIM2->CCR1 = 0;
 
     TIM2->DIER |= TIM_DIER_UIE;
     TIM2->DIER |= TIM_DIER_CC1IE;
@@ -49,10 +48,10 @@ void dma_init(){
     while(DMA1_Stream5->CR & DMA_SxCR_EN);
 
     DMA1_Stream5->CR |= DMA_CHANNEL_3;
-    // DMA1_Stream5->CR |= DMA_SxCR_CIRC;
     DMA1_Stream5->CR |= DMA_SxCR_MINC;
     DMA1_Stream5->CR |= MEM_SIZE_32;
     DMA1_Stream5->CR |= PERIPH_SIZE_32;
+
     DMA1_Stream5->CR |= DMA_MEM_TO_PERIPHERAL;
     DMA1_Stream5->CR |= DMA_SxCR_TCIE;
 
@@ -71,6 +70,10 @@ void send(Led *strip, int length){
     volatile uint32_t color;
     volatile uint32_t buffer[24];
 
+    DMA1_Stream5->NDTR = 24;
+    DMA1_Stream5->PAR =  (uint32_t)(&TIM2->CCR1);
+    DMA1_Stream5->M0AR = (uint32_t)(&buffer);  
+
     TIM2->CNT = 0;
     while(isResetting){};
 
@@ -83,9 +86,6 @@ void send(Led *strip, int length){
             else buffer[23-j] = LOGIC_0_TICKS;
         }   
 
-        DMA1_Stream5->NDTR = 24;
-        DMA1_Stream5->PAR =  (uint32_t)(&TIM2->CCR1);
-        DMA1_Stream5->M0AR = (uint32_t)(&buffer);  
         DMA1_Stream5->CR |=  DMA_SxCR_EN;
         while(!isDone){};
     }
@@ -123,7 +123,7 @@ void DMA1_Stream5_IRQHandler(void){
     }
 }
 
-int __io_putchar(int ch){
-    tx_send(ch);
-    return ch;
-}
+// int __io_putchar(int ch){
+//     tx_send(ch);
+//     return ch;
+// }

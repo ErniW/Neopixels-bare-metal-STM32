@@ -3,16 +3,16 @@
 #include "sysTick.h"
 
 #include "neopixels.h"
-#include "serial.h"
+// #include "serial.h"
 
-#include <stdio.h>
-#include <stdbool.h>
+// #include <stdio.h>
+// #include <stdbool.h>
 
 int main(){
 
     clockSpeed_PLL();  
     SysTick_Init();
-    tx_init();
+    // tx_init();
 
     timer_init();
     dma_init();
@@ -25,7 +25,7 @@ int main(){
     while(1){
         long time = getMillis();
 
-        if(time - prevTime > 5){
+        if(time - prevTime > 10){
 
             for(int i = 0; i < 8; i++){
                 strip[i] = setColor(value,value,value);
