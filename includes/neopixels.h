@@ -1,15 +1,23 @@
 #pragma once
+#include "../STM32F446RE/stm32f4xx.h"
+#include "../STM32F446RE/stm32f446xx.h"
 
 typedef struct {
-    int r;
-    int g;
-    int b;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
 } Led;
+
+enum{
+    STATE_IDLE,
+    STATE_BUSY,
+    STATE_RESETTING
+};
 
 void timer_init();
 void dma_init();
 
-Led setColor(int r, int g, int b);
+Led setColor(uint8_t r, uint8_t g, uint8_t b);
 
 void send(Led *strip, int length);
 void stop();
