@@ -28,8 +28,6 @@ void timer_init(){
     TIM2->PSC = TIMER_PRESCALER - 1;
     TIM2->ARR = WS2812_FREQUENCY_800KHZ_TICKS;
     TIM2->CCMR1 = CH1_PWM_MODE_1;
-    // TIM2->CCR1 = 0;
-
     TIM2->DIER |= TIM_DIER_UIE;
     TIM2->DIER |= TIM_DIER_CC1IE;
     TIM2->DIER |= TIM_DIER_CC1DE;
@@ -48,11 +46,9 @@ void dma_init(){
     while(DMA1_Stream5->CR & DMA_SxCR_EN);
 
     DMA1_Stream5->CR |= DMA_CHANNEL_3;
-    // DMA1_Stream5->CR |= DMA_SxCR_CIRC;
     DMA1_Stream5->CR |= DMA_SxCR_MINC;
     DMA1_Stream5->CR |= MEM_SIZE_32;
     DMA1_Stream5->CR |= PERIPH_SIZE_32;
-
     DMA1_Stream5->CR |= DMA_MEM_TO_PERIPHERAL;
     DMA1_Stream5->CR |= DMA_SxCR_TCIE;
 
@@ -63,41 +59,37 @@ Led setColor(uint8_t r, uint8_t g, uint8_t b){
     Led color = {r, g, b};
     return color;
 };
-// extern volatile int counter = 0;
-// volatile int isDone = 0;
-// volatile int isResetting = 0;
 
 void send(LedStrip *strip){
-    volatile uint32_t color;
-    volatile uint32_t buffer[24];
+    uint32_t color;
+    uint32_t buffer[24];
+     
+   
+    while(strip->state != STATE_IDLE){};
 
-    DMA1_Stream5->NDTR = 24;
     DMA1_Stream5->PAR =  (uint32_t)(&TIM2->CCR1);
-    DMA1_Stream5->M0AR = (uint32_t)(&buffer);  
-    // printf("START SEQUENCE\n");
-    TIM2->CNT = 0;
-    TIM2->CNT = 0;
-    // volatile long i = 0;
-    while(strip->isResetting){};
+    DMA1_Stream5->M0AR = (uint32_t)(&buffer);
+    DMA1_Stream5->NDTR = 24;
 
-    for(int i=0; i<8; ++i){   
-         while(DMA1_Stream5->CR & DMA_SxCR_EN){};
-        color = ((strip->led[i].g << 16) | (strip->led[i].r << 8 ) | (strip->led[i].b));
+    TIM2->CNT = 0;
+    TIM2->CCR1 = 0;
+    TIM2->CR1 |= TIM_CR1_CEN;
+
+    for(int i=0; i<strip->size; ++i){ 
+
+        color = (strip->led[i].g << 16) | (strip->led[i].r << 8 ) | (strip->led[i].b);
 
         for(int j=23; j>=0; --j){
             if(color & (1 << j)) buffer[23-j] = LOGIC_1_TICKS;
             else buffer[23-j] = LOGIC_0_TICKS;
-        }   
-
+        }
+          
         DMA1_Stream5->CR |=  DMA_SxCR_EN;
-        while(!strip->isDone){};
-        // while(DMA1_Stream5->CR & DMA_SxCR_EN){};
-        //   printf("PACKET SEND %d\n", counter);
+        TIM2->CNT = 0;
+        while(strip->state != STATE_PACKET_DONE){};
     }
-
-    strip->isResetting = 1;
-    // TIM2->ARR = WS2812_RESET_TICKS;
-    //printf("DONE PACKET SEND\n");
+    
+    strip->state = STATE_RESET_START;
 }   
 
 // void TIM2_IRQHandler(void) {
@@ -130,7 +122,7 @@ void send(LedStrip *strip){
 //     }
 // }
 
-// int __io_putchar(int ch){
-//     tx_send(ch);
-//     return ch;
-// }
+int __io_putchar(int ch){
+    tx_send(ch);
+    return ch;
+}

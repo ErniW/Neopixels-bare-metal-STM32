@@ -16,15 +16,14 @@ typedef struct {
 typedef struct {
     Led* led;
     uint16_t size;
-    uint8_t state;
-    volatile int isResetting;
-    volatile int isDone;
+    volatile uint8_t state;
 } LedStrip;
 
 enum{
     STATE_IDLE,
     STATE_BUSY,
     STATE_PACKET_DONE,
+    STATE_RESET_START,
     STATE_RESETTING
 };
 
@@ -34,4 +33,3 @@ void dma_init();
 Led setColor(uint8_t r, uint8_t g, uint8_t b);
 
 void send(LedStrip *strip);
-void stop();
