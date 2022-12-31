@@ -36,7 +36,7 @@
 I've tested the code with 8 LED strip and 1 meter, 74 LED strip. STM32 operates in 3.3V logic so even small noise can cause visible glitches. Things to improve connection quality:
 - Add capacitor between power and ground lines.
 - Logic level converter for data pin. 
-- External power supply.
+- External power supply (required for LED strips).
 
 ### Compile and upload:
 1. In makefile add directory to CMSIS drivers.
