@@ -1,22 +1,18 @@
 # Neopixels bare metal for STM32
-**Bare-metal implementation of WS2812B LED strip for STM32F446RE with PWM and DMA (Direct Memory Access).** During research I found many similar materials about working with WS2812 LED but all of them were for STM32 HAL without explaining the bare-metal concepts. Doing it from scratch was quite challenging. I guess I'm the first one to publish such thing without unnecessary complexity.
+**Bare-metal implementation of WS2812 LED strip for STM32F446RE with PWM and DMA (Direct Memory Access).** During research I found many similar materials about working with WS2812 LED but all of them were for STM32 HAL without explaining the bare-metal concepts (some tutorials have in the title "bare-metal" but eventually misleads potential readers). Doing it from scratch was quite challenging. I guess I'm the first one to publish such thing without unnecessary complexity.
 
-## Timing data from documentation:
-### WS2812:
-- **Frequency: 800kHz**
-- **Period: 1250ns** (1.25us)
-- **Logic 0: 350ns HIGH -> 800ns LOW** (0.35/0.8us, 28/64%)
-- **Logic 1: 700ns HIGH -> 600ns LOW** (0.7/0.6us, 56/48%)
-- **Tolerance: +/- 150ns** (12%)
-- **Reset: >50us**
+## Timing constrains from documentation:
 
-### WS2812b:
-- **Frequency: 800kHz**
-- **Period: 1250ns** (1.25us)
-- **Logic 0: 400ns HIGH -> 850ns LOW** (0.4/0.85us, 32/68%)
-- **Logic 1: 800ns HIGH -> 450ns LOW** (0.8/0.45us, 64/36%)
-- **Tolerance: +/- 150ns** (12%)
-- **Reset: >50us**
+|                  | WS2812                  | WS2812b                 |
+|-----------------:|:-----------------------:|:-----------------------:|
+| **Frequency**    | 800kHz                  | 800kHz                  |
+| **Period**       | 1250ns                  | 1250ns                  |
+| **Logic 0**      | 350ns HIGH -> 800ns LOW | 400ns HIGH -> 850ns LOW |
+| **Logic 1**      | 700ns HIGH -> 600ns LOW | 800ns HIGH -> 450ns LOW |
+| **Duty cycle 0** | 28% / 64%               | 32% / 68%               |
+| **Duty cycle 1** | 32% / 68%               | 64% / 36%               |
+| **Tolerance**    | +/- 150ns (12%)         | +/- 150ns (12%)         |
+| **Reset**        | > 50us                  | > 50us                  |
 
 **Additional notes**
 - *1000ns = 1us*
