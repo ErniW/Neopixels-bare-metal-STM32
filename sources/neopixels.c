@@ -85,48 +85,6 @@ Led setRGB(uint8_t r, uint8_t g, uint8_t b){
     return color;
 };
 
-/*
-Led setHSB(double h, double sa, double ba){
-
-    // ba /= 100;
-    // sa /= 100;
-
-    if (h >= 360) h = 0; 
-    double c = ba * sa;
-    double x = c * (1 - fabs(fmod((h / 60), 2) - 1));
-    double m = ba - c;
-    double red =0;
-    double green = 0;
-    double blue = 0;
-    int a = (h / 60);
-    switch (a) {
-        case 0: red = c + m; green = x + m; blue = 0; break;
-        case 1: red = x + m; green = c + m; blue = 0; break;
-        case 2: red = 0; green = c + m; blue = x + m; break;
-        case 3: red = 0; green = x + m; blue = c + m; break;
-        case 4: red = x + m; green = 0; blue = c + m; break;
-        case 5: red = c + m; green = 0; blue = x + m; break;
-    }
-
-
-    // printf("%llf\n", red);
-    // printf("%d, %d, %d\n",round(red ),round(green),round(blue ));
-
-    // uint64_t holder = (uint64_t)red;
-
-    //  printf("%d\n", a);
-
-    // uint8_t buf[8] = {0};
-    // memcpy(buf, &red, 8);
-    //  printf("%lld\n", (uint64_t)red);
-
-
-     Led newColor = {(uint8_t)red, (uint8_t)green, (uint8_t)blue};
-
-    return newColor;
-}
-*/
-
 Led setHSB(int hue, uint8_t sat, uint8_t bright){
     double s = ((double)sat) / 100;
     double br = ((double)bright) / 100;
@@ -199,6 +157,61 @@ Led setHSB(int hue, uint8_t sat, uint8_t bright){
 
     return newColor;
 }
+LedStrip createStrip(Led* led_array_ptr, uint16_t size){
+    LedStrip newStrip = {led_array_ptr, size, STATE_IDLE};
+    return newStrip;
+};
+
+void clearStrip(LedStrip* strip){
+    for(int i=0; i<strip->size; ++i){
+        strip->led[i] = setRGB(0,0,0);
+    }
+}
+
+
+/*
+Led setHSB(double h, double sa, double ba){
+
+    // ba /= 100;
+    // sa /= 100;
+
+    if (h >= 360) h = 0; 
+    double c = ba * sa;
+    double x = c * (1 - fabs(fmod((h / 60), 2) - 1));
+    double m = ba - c;
+    double red =0;
+    double green = 0;
+    double blue = 0;
+    int a = (h / 60);
+    switch (a) {
+        case 0: red = c + m; green = x + m; blue = 0; break;
+        case 1: red = x + m; green = c + m; blue = 0; break;
+        case 2: red = 0; green = c + m; blue = x + m; break;
+        case 3: red = 0; green = x + m; blue = c + m; break;
+        case 4: red = x + m; green = 0; blue = c + m; break;
+        case 5: red = c + m; green = 0; blue = x + m; break;
+    }
+
+
+    // printf("%llf\n", red);
+    // printf("%d, %d, %d\n",round(red ),round(green),round(blue ));
+
+    // uint64_t holder = (uint64_t)red;
+
+    //  printf("%d\n", a);
+
+    // uint8_t buf[8] = {0};
+    // memcpy(buf, &red, 8);
+    //  printf("%lld\n", (uint64_t)red);
+
+
+     Led newColor = {(uint8_t)red, (uint8_t)green, (uint8_t)blue};
+
+    return newColor;
+}
+*/
+
+
 /*
 Led getHSB(Led* color){
     float H = 0;
@@ -238,13 +251,3 @@ Led getHSB(Led* color){
     return newColor;
 };
 */
-LedStrip createStrip(Led* led_array_ptr, uint16_t size){
-    LedStrip newStrip = {led_array_ptr, size, STATE_IDLE};
-    return newStrip;
-};
-
-void clearStrip(LedStrip* strip){
-    for(int i=0; i<strip->size; ++i){
-        strip->led[i] = setRGB(0,0,0);
-    }
-}

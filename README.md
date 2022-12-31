@@ -34,7 +34,7 @@
 - APB2: 90 MHz
 - I'm using Timer 2 Channel 1 so it means it has 90MHz without prescaling. I'm using the prescaler of 2.
 
-*Could my code be more flexible? Probably yes but it would introduce an enormous amount of complexity to configure correct timer and dma channels.*
+*Could my code be more flexible? Probably yes but it would introduce an enormous amount of complexity to configure correct timer and dma channels. I was focused on making something that works and someone who is seeing this can follow along.*
 
 ### Connection:
 I've tested the code with 8 LED strip and 1 meter, 74 LED strip. STM32 operates in 3.3V logic so even small noise can cause visible glitches. Things to improve connection quality:
@@ -79,7 +79,7 @@ I've tested the code with 8 LED strip and 1 meter, 74 LED strip. STM32 operates 
 ## Possible improvements:
 **It's an ongoing project. I learned everything on my own and a lot of unanswered things still bother me:**
 - *There is some serious issue when switching between the end of DMA packet transmission and reset signal which changes the timer settings. Previously even a small change in code could break this routine. Removing the systick interrupt solved the issue but probably it's not the case. I use the state guards to make it synchronous. How to make it truly a non-blocking routine?*
-- *Furthermore, tutorials on the internet uses PWM compare event to update the capture-compare register for next bit, then disabling DMA so it won't pass several values at once. I'm using the update event which should gently switch the states. For capture-compare event should I enable preload? (OC1PE)*
+- *Furthermore, tutorials on the internet use PWM compare event to update the capture-compare register for next bit, then disabling DMA so it won't pass several values at once. I'm using the update event which should gently switch the states. For capture-compare event should I enable preload? (OC1PE)*
 - *Does it make sense to define interrupts for both timer and DMA?*
 - *Trying to debug PWM signals without an oscilloscope is not possible.*
 - *Fix the HSB convertion algorithm. I tested it in Visual Studio with C++ but there is an issue with conversion using doubles. The saturation and brightness must be set to 100.*
@@ -92,7 +92,7 @@ I've tested the code with 8 LED strip and 1 meter, 74 LED strip. STM32 operates 
 - `timer_init`: Configure the timer
 - `dma_init`: Configure the DMA.
 - `setRGB(r, g, b)`: Set pixel color as RGB.
-- `setHSB(h, s, b)`: Set pixel color as HSB and convert it to RGB. It's slower than setting directly as HSB. HSB is in range of 360, 100, 100.
+- `setHSB(h, s, b)`: Set pixel color as HSB and convert it to RGB. It's slower than setting directly as RGB. HSB is in range of 360, 100, 100.
 - `createStrip(led_array, size)`: Create the strip struct.
 - `updateStrip(strip)`: Update the strip.
 - `clearStrip(strip)`: Clear the colors of led array. It doesn't update the strip automatically.
