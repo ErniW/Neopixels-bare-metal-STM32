@@ -10,7 +10,7 @@
 | **Logic 0**      | 350ns HIGH -> 800ns LOW | 400ns HIGH -> 850ns LOW |
 | **Logic 1**      | 700ns HIGH -> 600ns LOW | 800ns HIGH -> 450ns LOW |
 | **Duty cycle 0** | 28% / 64%               | 32% / 68%               |
-| **Duty cycle 1** | 32% / 68%               | 64% / 36%               |
+| **Duty cycle 1** | 56% / 48%               | 64% / 36%               |
 | **Tolerance**    | +/- 150ns (12%)         | +/- 150ns (12%)         |
 | **Reset**        | > 50us                  | > 50us                  |
 
