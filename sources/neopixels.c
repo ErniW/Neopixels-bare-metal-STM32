@@ -1,23 +1,16 @@
-#include "neopixels.h"
-#include "serial.h"
-#include "sysTick.h"
 #include "../STM32F446RE/stm32f446xx.h"
-#include <stdio.h>
+#include <math.h>
+#include "sysTick.h"
+#include "neopixels.h"
 
-#define PA5_AF_MODE (1 << 11)
-#define PA5_AF1     (1 << 20)
-#define CH1_PWM_MODE_1 (6 << 4)
+#define PA5_AF_MODE     (1 << 11)
+#define PA5_AF1         (1 << 20)
+#define CH1_PWM_MODE_1  (6 << 4)
 
-// #define TIMER_PRESCALER 2
-// #define WS2812_FREQUENCY_800KHZ_TICKS 56
-// #define LOGIC_0_TICKS 16
-// #define LOGIC_1_TICKS 32
-// #define WS2812_RESET_TICKS 2500
-
-#define DMA_CHANNEL_3 (3 <<25)
-#define DMA_MEM_TO_PERIPHERAL ( 1 << 6)
-#define MEM_SIZE_32 (1 << 14)
-#define PERIPH_SIZE_32 ( 1 << 12)
+#define DMA_CHANNEL_3           (3 << 25)
+#define DMA_MEM_TO_PERIPHERAL   (1 << 6)
+#define MEM_SIZE_32             (1 << 14)
+#define PERIPH_SIZE_32          (1 << 12)
 
 void timer_init(){
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
@@ -28,10 +21,11 @@ void timer_init(){
     TIM2->PSC = TIMER_PRESCALER - 1;
     TIM2->ARR = WS2812_FREQUENCY_800KHZ_TICKS;
     TIM2->CCMR1 = CH1_PWM_MODE_1;
+    // TIM2->CCMR1 |= TIM_CCMR1_OC1PE;
     TIM2->DIER |= TIM_DIER_UIE;
+    TIM2->DIER |= TIM_DIER_UDE;
     TIM2->DIER |= TIM_DIER_CC1IE;
     TIM2->DIER |= TIM_DIER_CC1DE;
-    TIM2->DIER |= TIM_DIER_UDE;
     TIM2->CR2 |= TIM_CR2_CCDS;
 
     TIM2->CCER |= TIM_CCER_CC1E; 
@@ -55,16 +49,10 @@ void dma_init(){
     NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 };
 
-Led setColor(uint8_t r, uint8_t g, uint8_t b){
-    Led color = {r, g, b};
-    return color;
-};
-
-void send(LedStrip *strip){
+void updateStrip(LedStrip *strip){
     uint32_t color;
     uint32_t buffer[24];
      
-   
     while(strip->state != STATE_IDLE){};
 
     DMA1_Stream5->PAR =  (uint32_t)(&TIM2->CCR1);
@@ -92,37 +80,171 @@ void send(LedStrip *strip){
     strip->state = STATE_RESET_START;
 }   
 
-// void TIM2_IRQHandler(void) {
-//     if (TIM2->SR & TIM_SR_UIF) {
-//         TIM2->SR &=~ TIM_SR_UIF;
+Led setRGB(uint8_t r, uint8_t g, uint8_t b){
+    Led color = {r, g, b};
+    return color;
+};
 
-//         if(isDone) {       
-//             TIM2->CCR1 = 0;
-//             isDone = 0;
-//         }
+/*
+Led setHSB(double h, double sa, double ba){
 
-//         if(isResetting){
-//             TIM2->ARR = WS2812_FREQUENCY_800KHZ_TICKS;
-//             isResetting = 0;
-//         }
-//     }
-//     else if(TIM2->SR & TIM_SR_CC1IF){
-//         TIM2->SR &=~ TIM_SR_CC1IF; 
-//     }
-// }
+    // ba /= 100;
+    // sa /= 100;
 
-// void DMA1_Stream5_IRQHandler(void){
-//     if(DMA1->HISR & DMA_HISR_TCIF5){
-//         DMA1->HIFCR |= DMA_HIFCR_CTCIF5;
-//         isDone = 1;
+    if (h >= 360) h = 0; 
+    double c = ba * sa;
+    double x = c * (1 - fabs(fmod((h / 60), 2) - 1));
+    double m = ba - c;
+    double red =0;
+    double green = 0;
+    double blue = 0;
+    int a = (h / 60);
+    switch (a) {
+        case 0: red = c + m; green = x + m; blue = 0; break;
+        case 1: red = x + m; green = c + m; blue = 0; break;
+        case 2: red = 0; green = c + m; blue = x + m; break;
+        case 3: red = 0; green = x + m; blue = c + m; break;
+        case 4: red = x + m; green = 0; blue = c + m; break;
+        case 5: red = c + m; green = 0; blue = x + m; break;
+    }
 
-//         if(isResetting){
-//             TIM2->ARR = WS2812_RESET_TICKS;
-//         }
-//     }
-// }
 
-int __io_putchar(int ch){
-    tx_send(ch);
-    return ch;
+    // printf("%llf\n", red);
+    // printf("%d, %d, %d\n",round(red ),round(green),round(blue ));
+
+    // uint64_t holder = (uint64_t)red;
+
+    //  printf("%d\n", a);
+
+    // uint8_t buf[8] = {0};
+    // memcpy(buf, &red, 8);
+    //  printf("%lld\n", (uint64_t)red);
+
+
+     Led newColor = {(uint8_t)red, (uint8_t)green, (uint8_t)blue};
+
+    return newColor;
+}
+*/
+
+Led setHSB(int hue, uint8_t sat, uint8_t bright){
+    double s = ((double)sat) / 100;
+    double br = ((double)bright) / 100;
+
+    double H = (double)hue;
+    double S = s;
+    double B = br;
+
+    double P = 0;
+    double Q = 0;
+    double T = 0;
+
+    if (H == 360){
+        H = 0;
+    }
+    else {
+        H /= 60;
+    }
+
+    double fract = H - floor(H);
+    double r = 0;
+    double g = 0;
+    double b = 0;
+
+    P = B * (1. - S);
+    Q = B * (1. - S * fract);
+    T = B * (1. - S * (1. - fract));
+
+    if (H >= 0 && H < 1) {
+        r = B; 
+        g = T;
+        b = P;
+    }
+    else if (H >= 1 && H < 2) {
+        r = Q;
+        g = B;
+        b = P;
+    }
+    else if (H >= 2 && H < 3) {
+        r = P;
+        g = B;
+        b = T;
+    }
+    else if (H >= 3 && H < 4) {
+        r = P;
+        g = Q;
+        b = B;
+    }
+    else if (H >= 4 && H < 5) {
+        r = T;
+        g = P;
+        b = B;
+    }
+    else if (H >= 5 && H < 6) {
+        r = B;
+        g = P;
+        b = Q;
+    }
+    else {
+        r = 0;
+        g = 0;
+        b = 0;
+    }
+
+    Led newColor = {
+        (uint8_t)(r * 255), 
+        (uint8_t)(g * 255),
+        (uint8_t)(b * 255)
+    };
+
+    return newColor;
+}
+/*
+Led getHSB(Led* color){
+    float H = 0;
+    float S = 0;
+    float B = 0;
+    float delta = 0;
+
+    B = fmax(fmax(color->r, color->g), color->b);
+    delta = B - fmin(fmin(color->r, color->g), color->b);
+
+    if(B == 0){
+        S = 0;
+    }
+    else {
+        S = delta / B;
+    }
+
+    if(S == 0){
+        H = 0;
+    }
+    else{
+
+        if(color->r == B) H = (color->g - color->b) / delta;
+        else if(color->g == B) H = 2 + (color->b = color->r) / delta;
+        else if(color->b == B) H = 4 + (color->r - color->g) / delta;
+
+        H *= 60;
+
+        if(H < 0){
+            H += 360;
+        }
+    }
+
+    B /= 255;
+
+    Led newColor = {H, S, B};
+    return newColor;
+};
+*/
+LedStrip createStrip(Led* led_array_ptr, uint16_t size){
+    LedStrip newStrip = {led_array_ptr, size, STATE_IDLE};
+    return newStrip;
+};
+
+void clearStrip(LedStrip* strip){
+    for(int i=0; i<strip->size; ++i){
+        strip->led[i] = setRGB(0,0,0);
+    }
 }

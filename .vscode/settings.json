@@ -5,6 +5,10 @@
         "pll.h": "c",
         "iostream": "cpp",
         "neopixels.h": "c",
-        "systick.h": "c"
+        "systick.h": "c",
+        "math.h": "c",
+        "algorithm": "c",
+        "xutility": "c",
+        "cmath": "c"
     }
 }

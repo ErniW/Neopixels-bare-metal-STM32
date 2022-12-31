@@ -12,7 +12,6 @@ STLINK_DIR = ./stlink/bin
 SRCS = main.c
 SRCS += ./sources/pll.c
 SRCS += ./sources/sysTick.c
-SRCS += ./sources/serial.c
 SRCS += ./sources/neopixels.c
 
 SRCS += $(STARTUP)

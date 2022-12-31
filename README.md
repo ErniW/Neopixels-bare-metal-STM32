@@ -37,12 +37,10 @@
 *Could my code be more flexible? Probably yes but it would introduce an enormous amount of complexity to configure correct timer and dma channels.*
 
 ### Connection:
-I've tested the code with 8 LED strip. STM32 operates in 3.3V logic so even small noise can cause visible glitches. Things to improve connection quality:
+I've tested the code with 8 LED strip and 1 meter, 74 LED strip. STM32 operates in 3.3V logic so even small noise can cause visible glitches. Things to improve connection quality:
 - Add capacitor between power and ground lines.
-- Logic level converter or resistor for data pin. 
+- Logic level converter for data pin. 
 - External power supply.
-
-*I spent three days trying to fix glitches to realize that plugging STM32 to my phone charger solved all issues. It was cumbersome because I don't have an oscilloscope and I was 99,99% sure it was timing issue.*
 
 ### Compile and upload:
 1. In makefile add directory to CMSIS drivers.
@@ -78,10 +76,23 @@ I've tested the code with 8 LED strip. STM32 operates in 3.3V logic so even smal
 - The pulse length changes with next value in queue when wave reaches its period. For each LED it does the change 24 times. After that it stops DMA requests, the flag to wait for next period is set and then it starts another signal.
 - Reset signal is just a turn-off for 50us. You can use delay but it blocks the execution of rest things. It's better to temporaily change timer settings and return them back when another sequence is ready.
 
+## Possible improvements:
+**It's an ongoing project. I learned everything on my own and a lot of unanswered things still bother me:**
+- *There is some serious issue when switching between the end of DMA packet transmission and reset signal which changes the timer settings. Previously even a small change in code could break this routine. Removing the systick interrupt solved the issue but probably it's not the case. I use the state guards to make it synchronous. How to make it truly a non-blocking routine?*
+- *Furthermore, tutorials on the internet uses PWM compare event to update the capture-compare register for next bit, then disabling DMA so it won't pass several values at once. I'm using the update event which should gently switch the states. For capture-compare event should I enable preload? (OC1PE)*
+- *Does it make sense to define interrupts for both timer and DMA?*
+- *Trying to debug PWM signals without an oscilloscope is not possible.*
+- *Fix the HSB convertion algorithm. I tested it in Visual Studio with C++ but there is an issue with conversion using doubles. The saturation and brightness must be set to 100.*
+
+### List of structs:
+- `Led`: stores the rgb values.
+- `LedStrip`: stores the pointer to led array, its size and strip state.
+
 ### List of functions:
-- Configure the timer
-- Configure the DMA.
-- Set pixel color in RGB
-- Set pixel color in HSB
-- Update the strip.
-- Send the reset signal.
+- `timer_init`: Configure the timer
+- `dma_init`: Configure the DMA.
+- `setRGB(r, g, b)`: Set pixel color as RGB.
+- `setHSB(h, s, b)`: Set pixel color as HSB and convert it to RGB. It's slower than setting directly as HSB. HSB is in range of 360, 100, 100.
+- `createStrip(led_array, size)`: Create the strip struct.
+- `updateStrip(strip)`: Update the strip.
+- `clearStrip(strip)`: Clear the colors of led array. It doesn't update the strip automatically.
