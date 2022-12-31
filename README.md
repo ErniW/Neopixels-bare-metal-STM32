@@ -81,14 +81,15 @@ I've tested the code with 8 LED strip and 1 meter, 74 LED strip. STM32 operates 
 - *There is some serious issue when switching between the end of DMA packet transmission and reset signal which changes the timer settings. Previously even a small change in code could break this routine. Removing the systick interrupt solved the issue but probably it's not the case. I use the state guards to make it synchronous. How to make it truly a non-blocking routine?*
 - *Furthermore, tutorials on the internet use PWM compare event to update the capture-compare register for next bit, then disabling DMA so it won't pass several values at once. I'm using the update event which should gently switch the states. For capture-compare event should I enable preload? (OC1PE)*
 - *Does it make sense to define interrupts for both timer and DMA?*
+- *How to not store DMA buffer as uint32_t to reduce its size (no, changing sizes in DMA won't work).*
 - *Trying to debug PWM signals without an oscilloscope is not possible.*
 - *Fix the HSB convertion algorithm. I tested it in Visual Studio with C++ but there is an issue with conversion using doubles. The saturation and brightness must be set to 100.*
 
-### List of structs:
+## List of structs:
 - `Led`: stores the rgb values.
 - `LedStrip`: stores the pointer to led array, its size and strip state.
 
-### List of functions:
+## List of functions:
 - `timer_init`: Configure the timer
 - `dma_init`: Configure the DMA.
 - `setRGB(r, g, b)`: Set pixel color as RGB.
