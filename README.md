@@ -1,5 +1,5 @@
 # Neopixels bare metal for STM32
-**Bare-metal implementation of WS2812 LED strip for STM32F446RE with PWM and DMA (Direct Memory Access).** During research I found many similar materials about working with WS2812 LED but all of them were for STM32 HAL without explaining the bare-metal concepts (some tutorials have in the title "bare-metal" but eventually misleads potential readers). Doing it from scratch was quite challenging. I guess I'm the first one to publish such thing without unnecessary complexity.
+**Bare-metal implementation of WS2812 LED strip for STM32F446RE with PWM and DMA (Direct Memory Access).** During research I found many similar materials about working with WS2812 LED but all of them were for STM32 HAL without explaining the bare-metal concepts (some tutorials have in the title "bare-metal" but eventually misleads potential readers). Doing it from scratch was quite challenging. I guess I'm the first one to publish such thing without unnecessary complexity. It's in progress so I will appreciate any feedback.
 
 ## Timing constrains from documentation:
 
@@ -79,15 +79,14 @@ I've tested the code with 8 LED strip and 1 meter, 74 LED strip. STM32 operates 
 - *Does it make sense to define interrupts for both timer and DMA?*
 - *How to not store DMA buffer as uint32_t to reduce its size (no, changing sizes in DMA won't work).*
 - *Trying to debug PWM signals without an oscilloscope is not possible.*
-- *Fix the HSB convertion algorithm. I tested it in Visual Studio with C++ but there is an issue with conversion using doubles. The saturation and brightness must be set to 100.*
 
 ## List of structs:
 - `Led`: stores the rgb values.
 - `LedStrip`: stores the pointer to led array, its size and strip state.
 
 ## List of functions:
-- `timer_init`: Configure the timer
-- `dma_init`: Configure the DMA.
+- `timer_init()`: Configure the timer
+- `dma_init()`: Configure the DMA.
 - `setRGB(r, g, b)`: Set pixel color as RGB.
 - `setHSB(h, s, b)`: Set pixel color as HSB and convert it to RGB. It's slower than setting directly as RGB. HSB is in range of 360, 100, 100.
 - `createStrip(led_array, size)`: Create the strip struct.

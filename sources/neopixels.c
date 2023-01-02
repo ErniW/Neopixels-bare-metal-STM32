@@ -3,9 +3,9 @@
 #include "sysTick.h"
 #include "neopixels.h"
 
-#define PA5_AF_MODE     (1 << 11)
-#define PA5_AF1         (1 << 20)
-#define CH1_PWM_MODE_1  (6 << 4)
+#define PA5_AF_MODE             (1 << 11)
+#define PA5_AF1                 (1 << 20)
+#define CH1_PWM_MODE_1          (6 << 4)
 
 #define DMA_CHANNEL_3           (3 << 25)
 #define DMA_MEM_TO_PERIPHERAL   (1 << 6)
@@ -19,7 +19,7 @@ void timer_init(){
     GPIOA->AFR[0] |= PA5_AF1;
 
     TIM2->PSC = TIMER_PRESCALER - 1;
-    TIM2->ARR = WS2812_FREQUENCY_800KHZ_TICKS;
+    TIM2->ARR = WS2812_FREQ_800KHZ_TICKS;
     TIM2->CCMR1 = CH1_PWM_MODE_1;
     // TIM2->CCMR1 |= TIM_CCMR1_OC1PE;
     TIM2->DIER |= TIM_DIER_UIE;
@@ -167,87 +167,3 @@ void clearStrip(LedStrip* strip){
         strip->led[i] = setRGB(0,0,0);
     }
 }
-
-
-/*
-Led setHSB(double h, double sa, double ba){
-
-    // ba /= 100;
-    // sa /= 100;
-
-    if (h >= 360) h = 0; 
-    double c = ba * sa;
-    double x = c * (1 - fabs(fmod((h / 60), 2) - 1));
-    double m = ba - c;
-    double red =0;
-    double green = 0;
-    double blue = 0;
-    int a = (h / 60);
-    switch (a) {
-        case 0: red = c + m; green = x + m; blue = 0; break;
-        case 1: red = x + m; green = c + m; blue = 0; break;
-        case 2: red = 0; green = c + m; blue = x + m; break;
-        case 3: red = 0; green = x + m; blue = c + m; break;
-        case 4: red = x + m; green = 0; blue = c + m; break;
-        case 5: red = c + m; green = 0; blue = x + m; break;
-    }
-
-
-    // printf("%llf\n", red);
-    // printf("%d, %d, %d\n",round(red ),round(green),round(blue ));
-
-    // uint64_t holder = (uint64_t)red;
-
-    //  printf("%d\n", a);
-
-    // uint8_t buf[8] = {0};
-    // memcpy(buf, &red, 8);
-    //  printf("%lld\n", (uint64_t)red);
-
-
-     Led newColor = {(uint8_t)red, (uint8_t)green, (uint8_t)blue};
-
-    return newColor;
-}
-*/
-
-
-/*
-Led getHSB(Led* color){
-    float H = 0;
-    float S = 0;
-    float B = 0;
-    float delta = 0;
-
-    B = fmax(fmax(color->r, color->g), color->b);
-    delta = B - fmin(fmin(color->r, color->g), color->b);
-
-    if(B == 0){
-        S = 0;
-    }
-    else {
-        S = delta / B;
-    }
-
-    if(S == 0){
-        H = 0;
-    }
-    else{
-
-        if(color->r == B) H = (color->g - color->b) / delta;
-        else if(color->g == B) H = 2 + (color->b = color->r) / delta;
-        else if(color->b == B) H = 4 + (color->r - color->g) / delta;
-
-        H *= 60;
-
-        if(H < 0){
-            H += 360;
-        }
-    }
-
-    B /= 255;
-
-    Led newColor = {H, S, B};
-    return newColor;
-};
-*/

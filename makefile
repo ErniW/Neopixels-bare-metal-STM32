@@ -30,6 +30,7 @@ compile:
 	arm-none-eabi-objcopy -O ihex ./build/$(PROJECT_NAME).elf ./build/$(PROJECT_NAME).hex
 	arm-none-eabi-objcopy -O binary ./build/$(PROJECT_NAME).elf ./build/$(PROJECT_NAME).bin
 
+
 upload:
 	$(STLINK_DIR)/st-flash --reset write ./build/$(PROJECT_NAME).bin 0x8000000
 
