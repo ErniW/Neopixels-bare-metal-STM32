@@ -35,6 +35,7 @@ void updateStrip(LedStrip *strip);
 void clearStrip(LedStrip *strip);
 
 Led setHSB(int h, uint8_t s, uint8_t b);
-// Led setHSB(double h, double sa, double ba);
 Led setRGB(uint8_t r, uint8_t g, uint8_t b);
 Led getHSB(Led *c);
+
+// Led setHSB(double h, double sa, double ba);
